@@ -1,0 +1,16 @@
+{
+    "name": "3DOnline",
+    "version": "0.0.1",
+    "description": "Creating 3D model online",
+    "author": "Loi Kong",
+    "dependencies": {
+        "express": "3.0.0",
+        "ejs":"*"
+    },
+    "scripts": {
+        "start": "node ./server.js"
+    },
+    "engines": {
+        "node": ">= 0.8.0"
+    }
+}

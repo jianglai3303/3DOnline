@@ -1,0 +1,53 @@
+/*基本信息*/
+body {font:20px Tahoma;margin:0px;text-align:center;background:#FFF;}
+a:link,a:visited {font-size:12px;text-decoration: none;}
+a:hover{}
+
+/*页面层容器*/
+#container {width:800px;height:720px;margin:0px auto}
+
+/*页面头部*/
+#header{margin:0px auto 10px}
+#banner {background:url(../logo1.png)  no-repeat;width:730px;margin:1px auto 10px;height:200px; solid #EFEFEF;clear:both}
+
+/*页面主体*/
+#pagebody {width:800px;margin:0 auto;height:600px;}
+
+#side {
+	width:300px;
+	height:450px;
+	margin-left:auto;
+	margin-right:auto;
+	border-radius:25px;
+	background: #d1b18f; 
+}
+
+
+/*描述与按钮*/
+#word{
+	font:32px Microsoft YaHei;
+	font-weight:bold;
+	color:#734f51;
+	margin-top:20px;
+	margin-bottom:5px
+}
+#button{
+	text-align:center;
+	padding:10px 25px; 
+	background:#4d161a;
+	width:80px;
+	border-radius:25px;
+ 	margin-top:10px;
+	margin-left:auto;
+	margin-right:auto;
+	font:25px Microsoft YaHei;
+	font-weight:bold;
+	color:#ffffff;
+	cursor:pointer;
+}
+
+
+
+/*页面底部*/
+#footer {width:800px;margin:0 auto;height:50px;background:#FFFFFF}
+

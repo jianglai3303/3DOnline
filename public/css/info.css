@@ -1,0 +1,69 @@
+/*基本信息*/
+body {font:20px Tahoma;margin:0px;text-align:center;background:#FFF;}
+a:link,a:visited {font-size:12px;text-decoration: none;}
+a:hover{}
+
+/*页面层容器*/
+#container {width:800px;height:750px;margin:10px auto}
+
+/*页面头部*/
+#banner {background:url(../logo1.png) 0 30px no-repeat;width:730px;margin:1px auto 10px;height:240px; solid #EFEFEF;clear:both}
+
+/*页面主体*/
+#pagebody {width:800px;margin:0 auto;height:600px;}
+
+#square { 
+	width: 600px; 
+	height: 300px; 
+	margin:0px auto 10px;
+	background: #d1b18f; 
+	border-radius:25px;
+}
+.line{
+	height: 75px;
+} 
+#text{
+	width:350px;          
+	height:30px;          
+	margin-top:15px;
+	margin-bottom:15px;
+	margin-left:0px;
+	margin-right:0px;
+	float:left;
+	font:24px Microsoft YaHei;
+	color:#734f51;
+}
+
+
+/*描述与按钮*/
+#word{
+	text-align:left;
+	font:28px Microsoft YaHei;
+	font-weight:bold;
+	color:#734f51;
+	margin-top:15px;
+	margin-bottom:15px;
+	margin-left:30px;
+	margin-right:0px;
+	float:left;
+	width:150px
+}
+#button{
+	text-align:center;
+	padding:10px 25px; 
+	background:#4d161a;
+	width:80px;
+	height:25px;
+	border-radius:25px;
+ 	margin:10px 0px 0px 350px;
+	font:20px Microsoft YaHei;
+	font-weight:bold;
+	color:#ffffff;
+	cursor:pointer;
+}
+
+
+
+/*页面底部*/
+#footer {width:800px;margin:0 auto;height:50px;background:#FFFFFF}
+
