@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.cookie.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/three.min.js"></script>
 		<script src="js/STLLoader.js"></script>
@@ -135,7 +136,7 @@
 			camera.position.set( 3, 0, 0 );
 			cameraTarget = new THREE.Vector3( 0, 0, 0 );
 			
-			material = new THREE.MeshPhongMaterial( { ambient: 0xff5533,color: 0xff5533, specular: 0x111111, shininess: 200 } );
+			material = new THREE.MeshPhongMaterial( { ambient: 0x777777,color: 0x777777, specular: 0x111111, shininess: 200 } );
 			
 			refreshScene();
 			// RENDERER
@@ -218,7 +219,8 @@
 			var transer = new THREE.STLTranser();
 			var stl = transer.trans2STL(geometry);
 			var uuid = Math.uuid();
-			console.log(uuid);
+			console.log('uuid: '+uuid);
+			$.cookie('uuid', uuid);
 			
 			$.post('/model', {model: stl,name: uuid},
 				function(data){

@@ -110,3 +110,11 @@ THREE.STLTranser.prototype.moveY = function(geo,value){
 	var stl = this.trans2STL(geo);
 	return stl;
 }
+THREE.STLTranser.prototype.rotateX = function(geo,value){
+	
+	var m = new THREE.Matrix4();
+	m.makeRotationX(value);
+	geo.applyMatrix(m);
+	var stl = this.trans2STL(geo);
+	return stl;
+}

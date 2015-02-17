@@ -1,0 +1,433 @@
+<html>
+	<head>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.cookie.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/three.min.js"></script>
+		<script src="js/STLLoader.js"></script>
+		<script src="js/STLTranser.js"></script>
+		<script src="js/uuid.js"></script>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+		<style>
+			body {
+				background-color:#000;
+				color:#aaa;
+				padding:0;
+				margin:0;
+				font-weight: bold;
+				overflow:hidden;
+			}
+			.tool-bar{
+				position:absolute;
+				top:70px;
+				right:20px;
+				background:#d1b18f;
+				opacity: 1;
+				padding-top:20px;
+				width:400px;
+				font-family:"Microsoft YaHei", "微软雅黑", STXihei, "华文细黑", serif ,Georgia, "Times New Roman" !important;
+				border:0px;
+				border-radius:5px;
+				z-index:100;
+			}
+			.term{
+				margin-left:20px;
+				height:50px;
+				width:350px;
+			}
+			.progress-wrap{
+				padding-top:10px;
+			}
+			.term-append{
+				margin-left:180px;
+				height:50px;
+				width:100px;
+			}
+			.term-left{
+				margin-top:8px;
+				color:#734f51;
+				float:left;
+				width:80px;
+				font-size:15px;
+			}
+		</style>
+
+
+	</head>
+	<body>
+		<div class ="tool-bar">
+			<div class="term-append">
+				<button type="button" class="btn btn-default btn-warning" onclick="scaleMinusClick()"> - </button>
+				<button type="button" class="btn btn-default btn-warning" onclick="scaleAddClick()"> + </button>
+			</div>
+			<div class="term">
+				<span class="term-left">
+					胖瘦
+				</span>
+				<div class="progress-wrap">
+					<div class="progress">
+					<div id="scale-bar" class="progress-bar progress-bar-striped progress-bar-warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0.8" style="width: 40%;">
+					</div>
+					</div>
+				</div>				
+			</div>
+			<div class="term-append">
+				<button type="button" class="btn btn-default btn-warning" onclick="bendMinusClick()"> - </button>
+				<button type="button" class="btn btn-default btn-warning" onclick="bendAddClick()"> + </button>
+			</div>
+			<div class="term">
+				<span class="term-left">
+					耳朵弯曲度
+				</span>
+				<div class="progress-wrap">
+					<div class="progress">
+					<div id="bend-bar" class="progress-bar progress-bar-striped progress-bar-warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0.8" style="width: 0%;">
+					</div>
+					</div>
+				</div>				
+			</div>
+			<div class="term-append">
+				<button type="button" class="btn btn-default btn-warning" onclick="rotMinusClick()"> - </button>
+				<button type="button" class="btn btn-default btn-warning" onclick="rotAddClick()"> + </button>
+			</div>
+			<div class="term">
+				<span class="term-left">
+					手臂抬起度
+				</span>
+				<div class="progress-wrap">
+					<div class="progress">
+					<div id="rot-bar" class="progress-bar progress-bar-striped progress-bar-warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0.8" style="width: 0%;">
+					</div>
+					</div>
+				</div>				
+			</div>
+			<div class="term">
+				<span class="term-left">
+				</span>
+					<button type="button" class="pull-right btn btn-default btn-warning" onclick="submit()"> 提交订单 </button>
+			</div>
+		</div>
+		<script>
+		var container;
+		var camera, scene, renderer;
+		var material;
+		var scale =[0.12, 0.12, 0.12];
+		var geometry = new THREE.Geometry();
+		
+		//range from 0 to 0.8
+		var bodySize = 0.4;
+		var armRot = 0;
+		var earRot = 0;
+
+		init();
+		animate();
+
+		function loadMesh(name, visible){
+			var loader = new THREE.STLLoader();
+			loader.addEventListener( 'load', function ( event ) {
+				var mesh = new THREE.Mesh( event.content, material );
+				mesh.rotation.set( 0 , 0, 0 );
+				mesh.position.set( 0, 0, 0);
+				mesh.scale.set( scale[0], scale[1], scale[2] );
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				mesh.name = name;
+				if(!visible)
+					mesh.visible = false;
+					
+				var m = new THREE.Matrix4();
+				m.makeRotationX(-Math.PI/2);
+				mesh.geometry.applyMatrix(m);
+				scene.add(mesh);
+				
+				if(name=='shou1.STL'){
+					mesh.position.set(-0.18,-0.20,0.12);
+				}
+				if(name=='shou2.STL'){
+					mesh.position.set(0.18,-0.20,0.12);
+				}
+				if(name=='erduo1.STL'){
+					/*
+					
+					*/
+					mesh.position.set(-0.35,0.44,-0.06);
+				}
+				if(name=='erduo2.STL'){
+					/*
+					
+					**/
+					mesh.position.set(0.35,0.44,-0.06);
+				}
+			});
+			loader.load(name);
+		}
+		
+		
+		function init() {
+			container = document.createElement( 'div' );
+			document.body.appendChild( container );
+			
+			camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 15 );
+			camera.position.set( 3, 0, 0 );
+			cameraTarget = new THREE.Vector3( 0, 0, 0 );
+			
+			material = new THREE.MeshPhongMaterial( { ambient: 0x777777,color: 0x777777, specular: 0x111111, shininess: 200 } );
+			
+			refreshScene();
+			// RENDERER
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor(0xFFE384);
+			//renderer.setClearColor(scene.fog.color, 1 );
+
+			container.appendChild( renderer.domElement );
+
+		}
+		
+		function refreshScene(){
+			scene = new THREE.Scene();
+			scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
+			
+			scene.add( new THREE.AmbientLight( 0x777777 ) );
+			addShadowedLight( 1, 1, 1, 0xffffff, 1.35 );
+			addShadowedLight( 0.5, 1, -1, 0xffaa00, 1 );
+			
+			loadMesh( 'erduo1.STL',true);
+			loadMesh( 'erduo2.STL',true);
+			loadMesh( 'shou1.STL',true);
+			loadMesh( 'shou2.STL',true);
+			loadMesh( 'shenti.STL',true);
+		}
+		
+		function submit(){
+			
+			for (var i=0,len=scene.children.length; i<len; i++)
+			{
+				var x = scene.children[i];
+				if(x.visible == true){
+					if(x instanceof THREE.Mesh){
+						
+						if(x.name == 'shenti.STL'){
+						}
+						if(x.name == 'shou1.STL'){
+							var m1 = new THREE.Matrix4();
+							m1.makeRotationX(armRot);
+							x.geometry.applyMatrix(m1);
+							
+							var m = new THREE.Matrix4();
+							m.makeTranslation(-1.3,-1.7,1.2);
+							x.geometry.applyMatrix(m);	
+						}
+						if(x.name == 'shou2.STL'){
+							var m1 = new THREE.Matrix4();
+							m1.makeRotationX(armRot);
+							x.geometry.applyMatrix(m1);
+							
+							var m = new THREE.Matrix4();
+							m.makeTranslation(1.3,-1.7,1.2);
+							x.geometry.applyMatrix(m);
+						}
+						if(x.name == 'erduo1.STL'){
+							var m1 = new THREE.Matrix4();
+							m1.makeRotationY(earRot);
+							x.geometry.applyMatrix(m1);
+							
+							var m = new THREE.Matrix4();
+							m.makeTranslation(-3.0, 4,-0.6);
+							x.geometry.applyMatrix(m);
+						}
+						if(x.name == 'erduo2.STL'){
+							var m1 = new THREE.Matrix4();
+							m1.makeRotationY(-earRot);
+							x.geometry.applyMatrix(m1);
+							
+							var m = new THREE.Matrix4();
+							m.makeTranslation(3.0, 4,-0.6);
+							x.geometry.applyMatrix(m);
+						}
+						geometry.merge(x.geometry);
+					}
+				}
+			}
+			
+			var m = new THREE.Matrix4();
+			m.makeScale(scale[0], scale[1], scale[2]);
+			geometry.applyMatrix(m);
+			var transer = new THREE.STLTranser();
+			var stl = transer.trans2STL(geometry);
+			
+			var uuid = Math.uuid();
+			console.log('uuid: '+ uuid);
+			$.cookie('uuid', uuid);
+			
+			$.post('/model', {model: stl,name: uuid},
+				function(data){
+					window.location.href="/info";
+				}
+			);
+		}
+		function rotAddClick(){
+			if(armRot >  - 3*Math.PI/10)
+				armRot  -= Math.PI/20;
+			else
+				return;
+			var percent = (-armRot)/(3*Math.PI/10)*100+"%";
+			$('#rot-bar').css('width',percent);
+			console.log(armRot);
+		}
+		
+		function rotMinusClick(){
+			if(armRot <  0)
+				armRot  += Math.PI/20;
+			else
+				return;
+			var percent = (-armRot)/(3*Math.PI/10)*100+"%";
+			$('#rot-bar').css('width',percent);
+			console.log(armRot);
+			
+		}
+		
+		function bendAddClick(){
+			if(earRot  < 3 * Math.PI/4)
+				earRot  += Math.PI/8;
+			else
+				return;
+			var percent = earRot/( 3* Math.PI/4)*100+"%";
+			$('#bend-bar').css('width',percent);
+		}
+		
+		function bendMinusClick(){
+			if(earRot >  0)
+				earRot  -= Math.PI/8;
+			else
+				return;
+			var percent = earRot/ (3*Math.PI/4)*100+"%";
+			$('#bend-bar').css('width',percent);
+		}
+		
+		function scaleMinusClick(){
+			if(bodySize  >= 0.1)
+				bodySize -=0.1;
+			else
+				return;
+			var percent = bodySize/0.8*100+"%";
+			$('#scale-bar').css('width',percent);
+			console.log(bodySize);
+			scale[0] = 0.08 + bodySize/10;
+			scale[1] = 0.08 + bodySize/10;
+		}
+		
+		function scaleAddClick(){
+			if(bodySize  <= 0.7)
+				bodySize  +=0.1;
+			else
+				return;
+			var percent = bodySize /0.8*100+"%";
+			$('#scale-bar').css('width',percent);
+			console.log(bodySize);
+			scale[0] = 0.08 + bodySize/10;
+			scale[1] = 0.08 + bodySize/10;
+			console.log(scale);
+			refreshScene();
+		}
+		
+		function scaleMinusClick(){
+			if(bodySize  >= 0.1)
+				bodySize -=0.1;
+			else
+				return;
+			var percent = bodySize/0.8*100+"%";
+			$('#scale-bar').css('width',percent);
+			console.log(bodySize);
+			scale[0] = 0.08 + bodySize/10;
+			scale[1] = 0.08 + bodySize/10;
+			console.log(scale);
+			refreshScene();
+		}
+		
+		function addShadowedLight( x, y, z, color, intensity ) {
+
+			var directionalLight = new THREE.DirectionalLight( color, intensity );
+			directionalLight.position.set( x, y, z )
+			scene.add( directionalLight );
+
+			directionalLight.castShadow = true;
+
+			var d = 1;
+			directionalLight.shadowCameraLeft = -d;
+			directionalLight.shadowCameraRight = d;
+			directionalLight.shadowCameraTop = d;
+			directionalLight.shadowCameraBottom = -d;
+
+			directionalLight.shadowCameraNear = 1;
+			directionalLight.shadowCameraFar = 4;
+
+			directionalLight.shadowMapWidth = 1024;
+			directionalLight.shadowMapHeight = 1024;
+
+			directionalLight.shadowBias = -0.005;
+			directionalLight.shadowDarkness = 0.15;
+		}
+
+		function animate() {
+			requestAnimationFrame( animate );
+			render();
+		}
+
+		function render() {
+			
+			for (var i=0,len=scene.children.length; i<len; i++)
+			{
+				var x = scene.children[i];
+				
+				if(x.name == 'shenti.STL'){
+				}
+				if(x.name == 'shou1.STL'){
+					if(x.rotation.x < armRot){
+						x.rotation.x += 0.01;
+					}
+					if(x.rotation.x > armRot){
+						x.rotation.x -= 0.01;
+					}
+				}
+				if(x.name == 'shou2.STL'){
+					if(x.rotation.x < armRot){
+						x.rotation.x += 0.01;
+					}
+					if(x.rotation.x > armRot){
+						x.rotation.x -= 0.01;
+					}
+				}
+				if(x.name == 'erduo1.STL'){
+					if(x.rotation.y < earRot){
+						x.rotation.y += 0.01;
+					}
+					if(x.rotation.y > earRot){
+						x.rotation.y -= 0.01;
+					}
+				}
+				if(x.name == 'erduo2.STL'){
+					if(x.rotation.y < (-earRot)){
+						x.rotation.y += 0.01;
+					}
+					if(x.rotation.y > (-earRot)){
+						x.rotation.y -= 0.01;
+					}
+				}
+				
+			}
+			
+			var timer = Date.now() * 0.0005;
+			camera.position.x = Math.cos( timer ) * 3;
+			camera.position.z = Math.sin( timer ) * 3;
+			
+			camera.lookAt( cameraTarget );
+			renderer.render( scene, camera );
+		}
+			
+		</script>
+	
+	
+	</body>
+</html>

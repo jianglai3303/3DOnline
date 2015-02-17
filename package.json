@@ -5,7 +5,8 @@
     "author": "Loi Kong",
     "dependencies": {
         "express": "3.0.0",
-        "ejs":"*"
+        "ejs":"*",
+		"mysql":"*"
     },
     "scripts": {
         "start": "node ./server.js"

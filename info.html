@@ -3,11 +3,21 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <title>订单</title>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.cookie.js"></script>
 <link href="css/info.css" rel="stylesheet" type="text/css" media="all" />
 
  <script type="text/javascript">
-	function foo(){
-		window.location.href="/success";
+	function sub(){
+		var uuid = $.cookie('uuid');
+		var name = $('#name').val();
+		var phone = $('#phone').val();
+		var address = $('#address').val();
+		$.post('/order', {uuid: uuid, name: name, phone:phone, address:address},
+			function(data){
+				window.location.href="/success";
+			}
+		);
 	}
 </script>
 </head>
@@ -21,17 +31,17 @@
 		<div id="square">
 			<div class="line">
 				<div id="word">姓名</div>
-				<input id="text"></input>
+				<input id="name" class="text"></input>
 			</div>
 			<div class="line">
 				<div id="word">联系手机</div>
-				<input id="text"></input>
+				<input id="phone" class="text"></input>
 			</div>
 			<div class="line">
 				<div id="word">地址</div>
-				<input id="text"></input>
+				<input id="address" class="text"></input>
 			</div>
-			<div id="button" onclick="foo()">提交</div>
+			<div id="button" onclick="sub()">提交</div>
 		</div>	
 	</div>
 </div>
