@@ -2,13 +2,18 @@
  * @author future  http://github.com/jianglai3303
  *
  * Description: A THREE Transer for BufferGeometry and Geometry, translate .BufferGeometry/Geometry into STL file.
+ * And this library supports all formats of STL file (ascii or binary)
  *
  * Usage:
- *		var transer = new THREE.STLTranser(url);
- *		transer.trans2STL(geometry);
- * url is the http post url for tranfering the STL file to. Do not support to save the STL file by file system because 
- * of security concern.
- *
+ * For simple ascii STL file:
+ *		var transer = new THREE.STLTranser();
+ *		var stl = transer.trans2STL(geometry);
+ * For binary STL file:
+ *		var transer = new THREE.STLTranser();
+ *		var blob = transer.trans2STLBin(geometry);
+ *	
+ * blob is the HTML5 standard binary file format.You can transfer it to the server 
+ * by binary.js: https://github.com/binaryjs/binaryjs
  *
  */
  
@@ -86,35 +91,77 @@ THREE.STLTranser.prototype.trans2STL = function(geo){
 	return stl;
 }
 
-THREE.STLTranser.prototype.moveZ = function(geo,value){
+
+/**
+For a binary stl file.
+First 80 bytes are used for storing name of the file.the next 4 bytes are used for storing number
+of the facets.And following is a loop of facet. Each facet have 50 bytes:
+12 bytes normal verctor x,y,z
+12*3 bytes for three vertices
+2 bytes for additional info
+
+*/
+THREE.STLTranser.prototype.trans2STLBin = function(geo){
+	if ( (geo instanceof THREE.BufferGeometry == false)&&(geo instanceof THREE.Geometry == false) ) {
+		console.error( 'not an instance of THREE.BufferGeometry or THREE.Geometry.', geo );
+		return;
+	}
+	if(geo.faces){
+		var vertices = geo.vertices;
+		var faces = geo.faces;
+		var fileSize = faces.length*50+84;
+		var stl = new ArrayBuffer(fileSize);
+		console.log(fileSize);
+		var dv = new DataView(stl);
+		for(var i =0; i<80; i=i+1){
+			dv.setUint8(i,0,true);
+		}
+		dv.setUint32( 80,faces.length,true);
+		var dataOffset = 84;
+		var faceLength = 12 * 4 + 2;
+		for(var index in faces){
+			var start = dataOffset + index * faceLength;
+			dv.setFloat32(start,faces[index].normal.x,true);
+			dv.setFloat32(start+4,faces[index].normal.y,true);
+			dv.setFloat32(start+8,faces[index].normal.z,true);
+			var vindex =[faces[index].a,faces[index].b,faces[index].c];
+			
+			for ( var i = 1; i <= 3; i ++ ) {
+				var vstart = start + i * 12;
+				dv.setFloat32(vstart,vertices[vindex[i-1]].x,true);
+				dv.setFloat32(vstart+4,vertices[vindex[i-1]].y,true);
+				dv.setFloat32(vstart+8,vertices[vindex[i-1]].z,true);
+			}
+			dv.setUint16(start + 48, 0,true);
+		}
+		return stl;
+	}else{
+		var positions = geo.attributes.position.array;
+		var normals = geo.attributes.normal.array;
+		var fileSize = positions.length/9*50+84;
+		var stl = new ArrayBuffer(fileSize);
+		console.log(fileSize);
+		var dv = new DataView(stl);
+		for(var i =0; i<80; i=i+1){
+			dv.setUint8(i,0,true);
+		}
+		dv.setUint32( 80,positions.length/9,true);
+		var dataOffset = 84;
+		var faceLength = 12 * 4 + 2;
+		
+		for(var i=0; i<positions.length; i=i+9){
+			var start = dataOffset + i/9 * faceLength;
+			dv.setFloat32(start,normals[i],true);
+			dv.setFloat32(start+4,normals[i+1],true);
+			dv.setFloat32(start+8,normals[i+2],true);
+
+			for ( var j = 0; j < 9; j ++ ) {
+				var vstart = start + 12 + j * 4;
+				dv.setFloat32(vstart,positions[i+j],true);
+			}
+			dv.setUint16(start + 48, 0,true);
+		}
+		return stl;
+	}
 	
-	var m = new THREE.Matrix4();
-	m.makeTranslation(0,0,value);
-	geo.applyMatrix(m);
-	var stl = this.trans2STL(geo);
-	return stl;
-}
-THREE.STLTranser.prototype.moveX = function(geo,value){
-	
-	var m = new THREE.Matrix4();
-	m.makeTranslation(value,0,0);
-	geo.applyMatrix(m);
-	var stl = this.trans2STL(geo);
-	return stl;
-}
-THREE.STLTranser.prototype.moveY = function(geo,value){
-	
-	var m = new THREE.Matrix4();
-	m.makeTranslation(0,value,0);
-	geo.applyMatrix(m);
-	var stl = this.trans2STL(geo);
-	return stl;
-}
-THREE.STLTranser.prototype.rotateX = function(geo,value){
-	
-	var m = new THREE.Matrix4();
-	m.makeRotationX(value);
-	geo.applyMatrix(m);
-	var stl = this.trans2STL(geo);
-	return stl;
 }

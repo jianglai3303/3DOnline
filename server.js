@@ -29,6 +29,7 @@ app.get('/stitch', function(req, res){
 app.get('/success', function(req, res){
     res.render('success');
 });
+
 app.post('/model', function(req, res){
 	var model = req.body.model;
 	var name = req.body.name;
@@ -38,6 +39,8 @@ app.post('/model', function(req, res){
     });
 	res.send('model ok',200);
 });
+
+
 app.post('/order', function(req, res){
 
 	var uuid = req.body.uuid;
@@ -70,4 +73,19 @@ app.post('/order', function(req, res){
 	});
 	connection.end();
 });
-app.listen(3000);
+
+var http = require('http');
+var server = http.createServer(app).listen(9000);
+var BinaryServer = require('binaryjs').BinaryServer;
+var binaryServer = new BinaryServer({server: server, path: '/binary-endpoint'});
+
+binaryServer.on('connection', function(client){
+	client.on('stream', function(stream, meta){
+		var file = fs.createWriteStream('./public/test');
+		stream.pipe(file);
+		stream.on('data', function(data){
+			console.log(data);
+			stream.write(data);
+		});
+    });
+});

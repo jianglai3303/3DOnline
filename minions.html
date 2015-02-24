@@ -6,6 +6,7 @@
 		<script src="js/three.min.js"></script>
 		<script src="js/STLLoader.js"></script>
 		<script src="js/STLTranser.js"></script>
+		<script src="js/binary.js"></script>
 		<script src="js/uuid.js"></script>
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
@@ -123,6 +124,16 @@
 				if(!visible)
 					mesh.visible = false;
 				scene.add(mesh);
+				/*
+				if(name == 'limao.STL'){
+					var transer = new THREE.STLTranser();
+					var stl = transer.trans2STLBin(mesh.geometry);
+					var client = new BinaryClient('ws://localhost:9000/binary-endpoint');
+					client.on('open', function(){
+						client.send(stl, {name: 'test', size: stl.length});
+					});
+				}
+				**/
 			});
 			loader.load(name);
 		}
