@@ -151,13 +151,13 @@
 					/*
 					
 					*/
-					mesh.position.set(-0.35,0.44,-0.06);
+					mesh.position.set(-0.32,0.34,-0.06);
 				}
 				if(name=='erduo2.STL'){
 					/*
 					
 					**/
-					mesh.position.set(0.35,0.44,-0.06);
+					mesh.position.set(0.32,0.34,-0.06);
 				}
 			});
 			loader.load(name);
@@ -234,7 +234,7 @@
 							x.geometry.applyMatrix(m1);
 							
 							var m = new THREE.Matrix4();
-							m.makeTranslation(-3.0, 4,-0.6);
+							m.makeTranslation(-2.6, 3.0,-0.6);
 							x.geometry.applyMatrix(m);
 						}
 						if(x.name == 'erduo2.STL'){
@@ -243,7 +243,7 @@
 							x.geometry.applyMatrix(m1);
 							
 							var m = new THREE.Matrix4();
-							m.makeTranslation(3.0, 4,-0.6);
+							m.makeTranslation(2.6, 3.0,-0.6);
 							x.geometry.applyMatrix(m);
 						}
 						geometry.merge(x.geometry);
