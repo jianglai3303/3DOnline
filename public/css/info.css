@@ -18,6 +18,7 @@ a:hover{}
 	margin:0px auto 10px;
 	background: #d1b18f; 
 	border-radius:25px;
+	padding-top:30px;
 }
 .line{
 	height: 75px;
@@ -36,6 +37,15 @@ a:hover{}
 
 
 /*√Ë ˆ”Î∞¥≈•*/
+#inner{
+	text-align:center;
+	font:28px Microsoft YaHei;
+	font-weight:bold;
+	color:#734f51;
+	width:200px;
+	margin-left:auto;
+	margin-right:auto;
+}
 #word{
 	text-align:left;
 	font:28px Microsoft YaHei;
@@ -52,8 +62,8 @@ a:hover{}
 	text-align:center;
 	padding:10px 25px; 
 	background:#4d161a;
-	width:80px;
-	height:25px;
+	width:100px;
+	height:50px;
 	border-radius:25px;
  	margin:10px 0px 0px 350px;
 	font:20px Microsoft YaHei;

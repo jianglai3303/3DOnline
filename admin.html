@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>管理员系统</title>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.cookie.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$('#button').click(function(){
+		});
+	});
+	
+</script>
+<link href="css/info.css" rel="stylesheet" type="text/css" media="all" />
+
+</head>
+
+<body>
+<div id="container">
+	<div id="header">
+		<div id="banner"></div>
+	</div>
+	<div id="pagebody">
+		<form action="/login" method="get">
+			<div id="square">
+				<div class="line">
+					<div id="inner">管理员帐号登陆</div>
+				</div>
+				<div class="line">
+					<div id="word">用户名</div>
+					<input id="username" name="username" class="text"/>
+				</div>
+				<div class="line">
+					<div id="word">密码</div>
+					<input id="password" name ="password" type="password" class="text"/>
+				</div>
+				<input type="submit" id="button"  value="提交"/>
+			</div>
+		</form>	
+	</div>
+</div>
+
+
+</body>
+</html>

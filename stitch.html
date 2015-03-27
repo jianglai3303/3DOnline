@@ -58,21 +58,6 @@
 	<body>
 		<div class ="tool-bar">
 			<div class="term-append">
-				<button type="button" class="btn btn-default btn-warning" onclick="scaleMinusClick()"> - </button>
-				<button type="button" class="btn btn-default btn-warning" onclick="scaleAddClick()"> + </button>
-			</div>
-			<div class="term">
-				<span class="term-left">
-					胖瘦
-				</span>
-				<div class="progress-wrap">
-					<div class="progress">
-					<div id="scale-bar" class="progress-bar progress-bar-striped progress-bar-warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0.8" style="width: 40%;">
-					</div>
-					</div>
-				</div>				
-			</div>
-			<div class="term-append">
 				<button type="button" class="btn btn-default btn-warning" onclick="bendMinusClick()"> - </button>
 				<button type="button" class="btn btn-default btn-warning" onclick="bendAddClick()"> + </button>
 			</div>
@@ -114,9 +99,7 @@
 		var material;
 		var scale =[0.12, 0.12, 0.12];
 		var geometry = new THREE.Geometry();
-		
-		//range from 0 to 0.8
-		var bodySize = 0.4;
+
 		var armRot = 0;
 		var earRot = 0;
 
@@ -148,15 +131,9 @@
 					mesh.position.set(0.18,-0.20,0.12);
 				}
 				if(name=='erduo1.STL'){
-					/*
-					
-					*/
 					mesh.position.set(-0.32,0.34,-0.06);
 				}
 				if(name=='erduo2.STL'){
-					/*
-					
-					**/
 					mesh.position.set(0.32,0.34,-0.06);
 				}
 			});
@@ -274,7 +251,6 @@
 				return;
 			var percent = (-armRot)/(3*Math.PI/10)*100+"%";
 			$('#rot-bar').css('width',percent);
-			console.log(armRot);
 		}
 		
 		function rotMinusClick(){
@@ -284,7 +260,6 @@
 				return;
 			var percent = (-armRot)/(3*Math.PI/10)*100+"%";
 			$('#rot-bar').css('width',percent);
-			console.log(armRot);
 			
 		}
 		
@@ -306,45 +281,6 @@
 			$('#bend-bar').css('width',percent);
 		}
 		
-		function scaleMinusClick(){
-			if(bodySize  >= 0.1)
-				bodySize -=0.1;
-			else
-				return;
-			var percent = bodySize/0.8*100+"%";
-			$('#scale-bar').css('width',percent);
-			console.log(bodySize);
-			scale[0] = 0.08 + bodySize/10;
-			scale[1] = 0.08 + bodySize/10;
-		}
-		
-		function scaleAddClick(){
-			if(bodySize  <= 0.7)
-				bodySize  +=0.1;
-			else
-				return;
-			var percent = bodySize /0.8*100+"%";
-			$('#scale-bar').css('width',percent);
-			console.log(bodySize);
-			scale[0] = 0.08 + bodySize/10;
-			scale[1] = 0.08 + bodySize/10;
-			console.log(scale);
-			refreshScene();
-		}
-		
-		function scaleMinusClick(){
-			if(bodySize  >= 0.1)
-				bodySize -=0.1;
-			else
-				return;
-			var percent = bodySize/0.8*100+"%";
-			$('#scale-bar').css('width',percent);
-			console.log(bodySize);
-			scale[0] = 0.08 + bodySize/10;
-			scale[1] = 0.08 + bodySize/10;
-			console.log(scale);
-			refreshScene();
-		}
 		
 		function addShadowedLight( x, y, z, color, intensity ) {
 

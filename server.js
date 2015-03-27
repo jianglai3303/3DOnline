@@ -3,22 +3,61 @@ var ejs = require('ejs');
 var fs = require('fs');
 var app = express();
 var mysql  = require('mysql');
+var cookieParser = require('cookie-parser');
+
+function requiredAuthentication(req, res, next) {
+	var Cookies = {};
+
+    req.headers.cookie && req.headers.cookie.split(';').forEach(function(Cookie) {
+        var parts = Cookie.split('=');
+        Cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
+    });
+
+    if (Cookies['n']=='3donline'&&Cookies['p']=='12344321') {
+    	console.log('Auth Ok');
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
+app.get('/login', function (req, res) {
+    var password = req.query.password;
+    var username = req.query.username;
+    var user = {
+        username: '3donline',
+        password: '12344321',
+    };
+    if(password==user.password&&username==user.username){
+    	res.setHeader('Set-Cookie',['n=3donline', 'p=12344321']);
+	    res.redirect('/orders?page=1');
+    }else{
+    	res.redirect('/');
+    }
+});
 
 app.configure(function(){
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(express.static(__dirname + '/public'));
-    app.use(app.router);
     app.set('views', __dirname);
     app.engine('.html', ejs.__express);
     app.set('view engine', 'html');
+    app.use(express.bodyParser());
+    app.use(cookieParser('Authentication Tutorial'));
+    app.use(express.methodOverride());
+	app.use(app.router);
+	app.use(express.static(__dirname + '/public')); 
 });
+
+
 
 app.get('/', function(req, res){
     res.render('index');
 });
+
 app.get('/info', function(req, res){
     res.render('info');
+});
+app.get('/admin', function(req, res){
+    res.render('admin');
 });
 app.get('/minions', function(req, res){
     res.render('minions');
@@ -70,6 +109,36 @@ app.post('/order', function(req, res){
 			}
 			console.log('order save finished');
 			res.send('order ok',200);
+	});
+	connection.end();
+});
+
+app.get('/orders',requiredAuthentication,function(req,res){
+	var connection = mysql.createConnection({     
+	  host     : '127.0.0.1',
+	  user     : 'root',
+	  password     : 'root',
+	  database     : '3DOnline',
+	  port: '3306',
+	});
+	connection.connect(function(err){
+		if(err){        
+			  console.log('[query] - :'+err);
+			return;
+		}
+		console.log('[connection connect]  succeed!');
+	});
+	var pageIndex = 10*(req.query.page-1);
+	if(pageIndex < 0)
+		pageIndex = 0;
+	var  SqlParams = [pageIndex];
+	var  Sql = 'SELECT * FROM orders limit ?,10';
+	connection.query(Sql,SqlParams,function (err, result) {
+			if(err){
+				console.log('[QUERY ERROR] - ',err.message);
+				return;
+			}
+			res.send(result,200);
 	});
 	connection.end();
 });

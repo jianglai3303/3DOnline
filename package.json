@@ -7,7 +7,9 @@
         "express": "3.0.0",
         "ejs":"*",
 		"mysql":"*",
-		"binaryjs":"*"
+		"binaryjs":"*",
+        "cookie-parser":"*",
+        "express-session":"*"
     },
     "scripts": {
         "start": "node ./server.js"
