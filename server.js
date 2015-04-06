@@ -3,16 +3,24 @@ var ejs = require('ejs');
 var fs = require('fs');
 var app = express();
 var mysql  = require('mysql');
-var cookieParser = require('cookie-parser');
+
+
+app.configure(function(){
+	app.use(express.bodyParser());
+    app.use(express.methodOverride());
+	app.use(app.router);
+	app.use(express.static(__dirname + '/public')); 
+    app.set('views', __dirname);
+    app.engine('.html', ejs.__express);
+    app.set('view engine', 'html');
+});
 
 function requiredAuthentication(req, res, next) {
 	var Cookies = {};
-
     req.headers.cookie && req.headers.cookie.split(';').forEach(function(Cookie) {
         var parts = Cookie.split('=');
         Cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
     });
-
     if (Cookies['n']=='3donline'&&Cookies['p']=='12344321') {
     	console.log('Auth Ok');
         next();
@@ -30,23 +38,11 @@ app.get('/login', function (req, res) {
     };
     if(password==user.password&&username==user.username){
     	res.setHeader('Set-Cookie',['n=3donline', 'p=12344321']);
-	    res.redirect('/orders?page=1');
+	    res.redirect('/list?page=1');
     }else{
     	res.redirect('/');
     }
 });
-
-app.configure(function(){
-    app.set('views', __dirname);
-    app.engine('.html', ejs.__express);
-    app.set('view engine', 'html');
-    app.use(express.bodyParser());
-    app.use(cookieParser('Authentication Tutorial'));
-    app.use(express.methodOverride());
-	app.use(app.router);
-	app.use(express.static(__dirname + '/public')); 
-});
-
 
 
 app.get('/', function(req, res){
@@ -81,7 +77,6 @@ app.post('/model', function(req, res){
 
 
 app.post('/order', function(req, res){
-
 	var uuid = req.body.uuid;
 	var name = req.body.name;
 	var phone = req.body.phone;
@@ -113,6 +108,11 @@ app.post('/order', function(req, res){
 	connection.end();
 });
 
+app.get('/list',requiredAuthentication,function(req,res){
+	res.render('list');
+});
+
+
 app.get('/orders',requiredAuthentication,function(req,res){
 	var connection = mysql.createConnection({     
 	  host     : '127.0.0.1',
@@ -128,19 +128,22 @@ app.get('/orders',requiredAuthentication,function(req,res){
 		}
 		console.log('[connection connect]  succeed!');
 	});
-	var pageIndex = 10*(req.query.page-1);
-	if(pageIndex < 0)
-		pageIndex = 0;
-	var  SqlParams = [pageIndex];
-	var  Sql = 'SELECT * FROM orders limit ?,10';
-	connection.query(Sql,SqlParams,function (err, result) {
-			if(err){
-				console.log('[QUERY ERROR] - ',err.message);
-				return;
-			}
-			res.send(result,200);
-	});
-	connection.end();
+	var pageIndex = 5*(req.query.page-1);
+	if(pageIndex < 0){
+		connection.end();
+		res.send([],200);
+	}else{
+		var  SqlParams = [pageIndex];
+		var  Sql = 'SELECT * FROM orders  order by id desc limit ?,5';
+		connection.query(Sql,SqlParams,function (err, result) {
+				if(err){
+					console.log('[QUERY ERROR] - ',err.message);
+					return;
+				}
+				res.send(result,200);
+		});
+		connection.end();
+	}
 });
 
 var http = require('http');

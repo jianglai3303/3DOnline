@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>管理员系统</title>
+<style type="text/css">
+	.wrapper{
+		width: 700px;
+		height: 600px;
+		margin-top: 100px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	#warn{
+		width: 400px;
+		text-align: center;
+		margin-left: auto;
+		margin-right: auto;
+	}
+</style>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	function getUrlParam(name){
+	    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if (r != null) return unescape(r[2]); return null;
+    }
+	$(function(){
+		var page = parseInt(getUrlParam("page"));	
+		$("#pre").click(function(){
+			var pre = page - 1;
+			window.location.href="/list?page="+pre;
+		});	
+		$("#next").click(function(){
+			var next = page + 1;
+			window.location.href="/list?page="+next;
+		});			
+		$.get("/orders?page="+page, function(data){
+		  	for(var i=0;i<data.length;i++){
+		  		var id = (page-1)*5+i+1;
+			  	$('.nav').append('<li role="presentation"><a href="#">订单'+id+'</a></li>');
+			}
+			for(var i=0;i<data.length;i++){
+				$("ul li:eq("+i+")").click(function(i){
+					return function(){
+						$("li").attr("class","disable");
+						$(this).attr("class","active");
+						$("#name").html("<h4>"+data[i].name+"</h4>");
+						$("#phone").html("<h4>"+data[i].phone+"</h4>");
+						$("#address").html("<h4>"+data[i].address+"</h4>");
+						var http="http://localhost:9000/uploaded/"+data[i].uuid+".stl";
+						$("#download").html('<h4><a href="'+http+'">'+http+'</a></h4>');
+					}
+				}(i));
+			}
+			if(data.length!=0){
+				$("ul li:first").trigger("click");
+			}
+			else{
+				$(".panel").hide();
+				$("#warn").html("<h2>到头了(─.─|||</h2>");
+			}
+		});
+
+	});
+</script>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+</head>
+<body>
+<div class="wrapper">
+	<div class="row">
+		<ul class="nav nav-pills nav-stacked col-md-2">
+		</ul>
+		<div class="col-md-9">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+				    <h3 class="panel-title">订单详情</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-3">
+							<h4>姓名</h4>
+						</div>
+						<div id="name" class="col-md-9"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3">
+							<h4>电话</h4>
+						</div>
+						<div id="phone" class="col-md-9"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3">
+							<h4>地址</h4>
+						</div>
+						<div id="address" class="col-md-9"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3">
+							<h4>模型下载</h4>
+						</div>
+						<div id="download" class="col-md-9"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="warn"></div>
+	<nav>
+	  <ul class="pager">
+	    <li><a id="pre">上一页</a></li>
+	    <li><a id="next">下一页</a></li>
+	  </ul>
+	</nav>
+</div>
+</body>
+</html>

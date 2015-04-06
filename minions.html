@@ -232,7 +232,7 @@
 			var uuid = Math.uuid();
 			console.log('uuid: '+uuid);
 			$.cookie('uuid', uuid);
-			
+			console.log(stl);
 			$.post('/model', {model: stl,name: uuid},
 				function(data){
 					window.location.href="/info";
