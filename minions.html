@@ -125,7 +125,7 @@
 					mesh.visible = false;
 				scene.add(mesh);
 				/*
-				if(name == 'limao.STL'){
+				if(name == 'xiaohuangren.STL'){
 					var transer = new THREE.STLTranser();
 					var stl = transer.trans2STLBin(mesh.geometry);
 					var client = new BinaryClient('ws://localhost:9000/binary-endpoint');
@@ -219,7 +219,10 @@
 				var x = scene.children[i];
 				if(x.visible == true){
 					if(x instanceof THREE.Mesh){
-						geometry.merge(x.geometry);
+						console.log(x);
+						var temp = new THREE.Geometry();
+						temp = temp.fromBufferGeometry(x.geometry);
+						geometry.merge(temp);
 					}
 				}
 			}
@@ -232,7 +235,6 @@
 			var uuid = Math.uuid();
 			console.log('uuid: '+uuid);
 			$.cookie('uuid', uuid);
-			console.log(stl);
 			$.post('/model', {model: stl,name: uuid},
 				function(data){
 					window.location.href="/info";

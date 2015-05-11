@@ -5,6 +5,7 @@
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/three.min.js"></script>
 		<script src="js/STLLoader.js"></script>
+		<script src="js/binary.js"></script>
 		<script src="js/STLTranser.js"></script>
 		<script src="js/uuid.js"></script>
 		<link rel="stylesheet" href="css/bootstrap.min.css">
@@ -119,10 +120,18 @@
 				if(!visible)
 					mesh.visible = false;
 					
-				var m = new THREE.Matrix4();
-				m.makeRotationX(-Math.PI/2);
-				mesh.geometry.applyMatrix(m);
 				scene.add(mesh);
+
+				/*
+				if(name == 'shenti.STL'){
+					var transer = new THREE.STLTranser();
+					var stl = transer.trans2STLBin(mesh.geometry);
+					var client = new BinaryClient('ws://localhost:9000/binary-endpoint');
+					client.on('open', function(){
+						client.send(stl, {name: 'test', size: stl.length});
+					});
+				}
+				**/
 				
 				if(name=='shou1.STL'){
 					mesh.position.set(-0.18,-0.20,0.12);
@@ -223,7 +232,9 @@
 							m.makeTranslation(2.6, 3.0,-0.6);
 							x.geometry.applyMatrix(m);
 						}
-						geometry.merge(x.geometry);
+						var temp = new THREE.Geometry();
+						temp = temp.fromBufferGeometry(x.geometry);
+						geometry.merge(temp);
 					}
 				}
 			}

@@ -153,7 +153,9 @@ var binaryServer = new BinaryServer({server: server, path: '/binary-endpoint'});
 
 binaryServer.on('connection', function(client){
 	client.on('stream', function(stream, meta){
-		var file = fs.createWriteStream('./public/test');
+		var stamp = new Date().getTime();
+		var filename = './public/'+stamp+'.stl';
+		var file = fs.createWriteStream(filename);
 		stream.pipe(file);
 		stream.on('data', function(data){
 			console.log(data);
